@@ -2,7 +2,7 @@ package com.example.weather.di
 
 import com.example.weather.data.WeatherRepositoryImpl
 import com.example.weather.data.WeatherService
-import com.example.weather.domain.api.WeatherRepository
+import com.example.weather.domain.WeatherRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
