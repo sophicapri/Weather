@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Météo</string>
+    <string name="search">Rechercher</string>
+    <string name="current">actuelle</string>
+    <string name="forecast">prévisions</string>
+    <string name="clear">Effacer</string>
+    <string name="city">Ville</string>
+    <string name="feels_like">"ressenti: %1$s°%2$s"</string>
+    <string name="humidity">"humidité: %s%%"</string>
+    <string name="wind">"vent: %s"</string>
+    <string name="generic_error_message">"Désolé, nous n'avons pas trouvé de résultats pour cette recherche."</string>
+</resources>

@@ -23,8 +23,5 @@ class WeatherRepositoryImpl(private val weatherService: WeatherService) :
         }
     }
 
-    // if we want to let the user change the degree type in the future,
-    // we will only have to change this function and instead retrieve the selected degree type (through DataStore Preferences for example)
     private fun getDegreeType() = "C"
-
 }

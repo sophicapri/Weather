@@ -17,6 +17,7 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
@@ -27,6 +28,7 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
+import com.example.weather.R
 import com.example.weather.domain.model.CurrentWeather
 import com.example.weather.domain.model.ForecastWeather
 
@@ -36,7 +38,7 @@ fun HomeScreen(
     events: HomeViewModel.UiEvents,
     radioButtonsValues: Array<WeatherTypeEnum>,
 ) {
-    Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
+    Column(modifier = Modifier.padding(24.dp)) {
 
         SearchLocationView(radioButtonsValues, events)
 
@@ -57,7 +59,11 @@ fun HomeScreen(
             }
             is UiResult.Failure -> {
                 isLoading.value = false
-                Toast.makeText(LocalContext.current, "Oops", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    LocalContext.current,
+                    stringResource(R.string.generic_error_message),
+                    Toast.LENGTH_LONG
+                ).show()
             }
             else -> {
                 isLoading.value = false
@@ -101,7 +107,8 @@ fun SearchButton(onSearchClick: () -> Unit, focusManager: FocusManager) {
         ),
     ) {
         Text(
-            "SEARCH", Modifier.padding(start = 6.dp, end = 6.dp),
+            stringResource(R.string.search).uppercase(),
+            Modifier.padding(start = 6.dp, end = 6.dp),
             color = Color.Black
         )
     }
@@ -134,8 +141,8 @@ fun WeatherTypeRadioButtons(
 
                 Text(
                     text = when (it) {
-                        WeatherTypeEnum.CURRENT -> it.name.lowercase() // todo: change to res
-                        WeatherTypeEnum.FORECAST -> it.name.lowercase() // todo: change to res
+                        WeatherTypeEnum.CURRENT -> stringResource(R.string.current)
+                        WeatherTypeEnum.FORECAST -> stringResource(R.string.forecast)
                     },
                     color = Color.Black
                 )
@@ -148,18 +155,13 @@ fun WeatherTypeRadioButtons(
 fun SearchTextField(events: HomeViewModel.UiEvents, focusManager: FocusManager) {
     var value by remember { mutableStateOf("") }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(
-            top = 16.dp,
-        )
-    ) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = Icons.Default.Search,
             tint = TextFieldDefaults
                 .textFieldColors()
                 .leadingIconColor(enabled = true, isError = false).value,
-            contentDescription = "Search",
+            contentDescription = stringResource(id = R.string.search),
             modifier = Modifier.padding(start = 16.dp)
         )
 
@@ -172,14 +174,14 @@ fun SearchTextField(events: HomeViewModel.UiEvents, focusManager: FocusManager) 
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.Clear,
-                    contentDescription = "Clear",
+                    contentDescription = stringResource(R.string.clear),
                     modifier = Modifier.clickable {
                         value = ""
                         events.onClearInput()
                     }
                 )
             },
-            placeholder = { Text("City") },
+            placeholder = { Text(stringResource(R.string.city)) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = {
                 focusManager.clearFocus()
@@ -207,7 +209,10 @@ fun CurrentWeatherView(currentWeather: CurrentWeather) {
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Row {
-            Text(text = currentWeather.day, modifier = Modifier.padding(end = 4.dp, bottom = 4.dp))
+            Text(
+                text = currentWeather.day,
+                modifier = Modifier.padding(end = 4.dp, bottom = 4.dp)
+            )
             Text(text = currentWeather.observationTime)
         }
         Text(text = currentWeather.skyText)
@@ -218,7 +223,7 @@ fun CurrentWeatherView(currentWeather: CurrentWeather) {
             RemoteGif(
                 url = currentWeather.image,
                 size = 58.dp,
-                contentDesc = "Weather icon"
+                contentDesc = currentWeather.skyText
             )
             Row(
                 verticalAlignment = Alignment.Top,
@@ -243,15 +248,19 @@ fun CurrentWeatherView(currentWeather: CurrentWeather) {
 
             Column {
                 Text(
-                    text = "feels like: ${currentWeather.feelsLike}°${currentWeather.degType}",
+                    text = stringResource(
+                        id = R.string.feels_like,
+                        currentWeather.feelsLike,
+                        currentWeather.degType
+                    ),
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
-                    text = "humidity: ${currentWeather.humidity}%",
+                    text = stringResource(id = R.string.humidity, currentWeather.humidity),
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
-                    text = "wind: ${currentWeather.windDisplay}",
+                    text = stringResource(id = R.string.wind, currentWeather.windDisplay),
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
