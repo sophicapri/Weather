@@ -1,6 +1,8 @@
 package com.example.weather.presentation
 
 import androidx.lifecycle.ViewModel
+import com.example.weather.di.IODispatcher
+import com.example.weather.di.MainDispatcher
 import com.example.weather.domain.GetCurrentWeatherUseCase
 import com.example.weather.domain.GetForecastUseCase
 import com.example.weather.domain.model.CurrentWeather
@@ -15,11 +17,11 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getCurrentWeatherUseCase: GetCurrentWeatherUseCase,
     private val getForecastUseCase: GetForecastUseCase,
-    mainDispatcher: CoroutineDispatcher,
-    //ioDispatcher: CoroutineDispatcher,
+    @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
+    @IODispatcher ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + mainDispatcher)
+    private val ioScope = CoroutineScope(job + ioDispatcher)
 
     private var location = ""
     private var weatherType = WeatherTypeEnum.CURRENT
@@ -61,32 +63,32 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun displayCurrentWeather() {
-        // scope.launch {
-        CoroutineScope(Dispatchers.IO).launch {
+        ioScope.launch {
             val res = getCurrentWeatherUseCase(location)
-            withContext(Dispatchers.Main) {
+            withContext(mainDispatcher) {
                 if (res.isSuccess)
                     _state.value = UiResult.Success(UiState(current = res.getOrNull()))
                 else
                     _state.value = UiResult.Failure()
             }
         }
-        //}
     }
 
     private fun displayForecast() {
-        scope.launch {
+        ioScope.launch {
             val res = getForecastUseCase(location)
-            if (res.isSuccess)
-                _state.value = UiResult.Success(UiState(forecast = res.getOrNull()))
-            else
-                _state.value = UiResult.Failure()
+            withContext(mainDispatcher) {
+                if (res.isSuccess)
+                    _state.value = UiResult.Success(UiState(forecast = res.getOrNull()))
+                else
+                    _state.value = UiResult.Failure()
+            }
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        scope.cancel()
+        ioScope.cancel()
     }
 
     data class UiState(

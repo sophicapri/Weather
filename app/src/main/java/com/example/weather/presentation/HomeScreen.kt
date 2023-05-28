@@ -2,7 +2,6 @@ package com.example.weather.presentation
 
 import android.os.Build.VERSION.SDK_INT
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -51,6 +50,24 @@ fun HomeScreen(
 }
 
 @Composable
+fun SearchLocationView(
+    radioButtonsValues: Array<WeatherTypeEnum>,
+    events: HomeViewModel.UiEvents
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        val focusManager = LocalFocusManager.current
+
+        SearchTextField(events, focusManager)
+
+        WeatherTypeRadioButtons(radioButtonsValues, events.onRadioButtonSelected)
+
+        SearchButton(events.onSearchClick, focusManager)
+
+        Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+@Composable
 fun WeatherView(state: UiResult<HomeViewModel.UiState>) {
     val context = LocalContext.current
     when (state) {
@@ -71,25 +88,8 @@ fun WeatherView(state: UiResult<HomeViewModel.UiState>) {
                 Toast.LENGTH_LONG
             ).show()
         }
-        else -> { /* do nothing */ }
-    }
-}
-
-@Composable
-fun SearchLocationView(
-    radioButtonsValues: Array<WeatherTypeEnum>,
-    events: HomeViewModel.UiEvents
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        val focusManager = LocalFocusManager.current
-
-        SearchTextField(events, focusManager)
-
-        WeatherTypeRadioButtons(radioButtonsValues, events.onRadioButtonSelected)
-
-        SearchButton(events.onSearchClick, focusManager)
-
-        Spacer(modifier = Modifier.height(24.dp))
+        else -> { /* do nothing */
+        }
     }
 }
 
@@ -171,14 +171,17 @@ fun SearchTextField(events: HomeViewModel.UiEvents, focusManager: FocusManager) 
                 events.onInputChange(newValue)
             },
             trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = stringResource(R.string.clear),
-                    modifier = Modifier.clickable {
+                IconButton(
+                    onClick = {
                         value = ""
                         events.onClearInput()
-                    }
-                )
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = stringResource(R.string.clear),
+                    )
+                }
             },
             placeholder = { Text(stringResource(R.string.city)) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),

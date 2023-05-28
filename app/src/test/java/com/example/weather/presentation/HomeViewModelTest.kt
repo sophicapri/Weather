@@ -19,7 +19,7 @@ class HomeViewModelTest {
 
     @Before
     fun setUp() {
-        viewModel = HomeViewModel(getCurrentWeatherUseCase, getForecastUseCase, testDispatcher)
+        viewModel = HomeViewModel(getCurrentWeatherUseCase, getForecastUseCase, testDispatcher, testDispatcher)
     }
 
     @Test
