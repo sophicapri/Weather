@@ -40,16 +40,32 @@ fun HomeScreen(
 
         SearchLocationView(radioButtonsValues, events)
 
-        if (state is UiResult.Success) {
-            state.data.current?.let {
-                CurrentWeatherView(it)
+        val isLoading = remember { mutableStateOf(false) }
+        when (state) {
+            is UiResult.Loading -> {
+                isLoading.value = true
             }
+            is UiResult.Success -> {
+                isLoading.value = false
+                state.data.current?.let {
+                    CurrentWeatherView(it)
+                }
 
-            state.data.forecast?.let {
-                ForecastView(it)
+                state.data.forecast?.let {
+                    ForecastView(it)
+                }
             }
-        } else if (state is UiResult.Failure) {
-            Toast.makeText(LocalContext.current, "Oops", Toast.LENGTH_SHORT).show()
+            is UiResult.Failure -> {
+                isLoading.value = false
+                Toast.makeText(LocalContext.current, "Oops", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                isLoading.value = false
+            }
+        }
+
+        if (isLoading.value) {
+            CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
         }
     }
 }

@@ -43,8 +43,9 @@ class HomeViewModel @Inject constructor(
     private fun onSearchClick() {
         if (location.isNotEmpty()) {
             location = location.trim()
+            _state.value = UiResult.Loading()
             when (weatherType) {
-                WeatherTypeEnum.CURRENT -> displayCurrentCurrentWeather()
+                WeatherTypeEnum.CURRENT -> displayCurrentWeather()
                 WeatherTypeEnum.FORECAST -> displayForecast()
             }
         }
@@ -55,7 +56,7 @@ class HomeViewModel @Inject constructor(
         _state.value = UiResult.None()
     }
 
-    private fun displayCurrentCurrentWeather() {
+    private fun displayCurrentWeather() {
         viewModelScope.launch {
             val res = getCurrentWeatherUseCase(location)
             if (res.isSuccess)
