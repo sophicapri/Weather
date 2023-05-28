@@ -9,7 +9,6 @@ data class CurrentWeather(
     val humidity: String,
     val windDisplay: String,
     val day: String,
-    val shortDay: String,
     val degType: String,
     val image: String
 )
