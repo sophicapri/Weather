@@ -42,37 +42,36 @@ fun HomeScreen(
 
         SearchLocationView(radioButtonsValues, events)
 
-        val isLoading = remember { mutableStateOf(false) }
-        when (state) {
-            is UiResult.Loading -> {
-                isLoading.value = true
-            }
-            is UiResult.Success -> {
-                isLoading.value = false
-                state.data.current?.let {
-                    CurrentWeatherView(it)
-                }
-
-                state.data.forecast?.let {
-                    ForecastView(it)
-                }
-            }
-            is UiResult.Failure -> {
-                isLoading.value = false
-                Toast.makeText(
-                    LocalContext.current,
-                    stringResource(R.string.generic_error_message),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-            else -> {
-                isLoading.value = false
-            }
-        }
-
-        if (isLoading.value) {
+        if (state is UiResult.Loading) {
             CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
         }
+
+        WeatherView(state)
+    }
+}
+
+@Composable
+fun WeatherView(state: UiResult<HomeViewModel.UiState>) {
+    val context = LocalContext.current
+    when (state) {
+        is UiResult.Success -> {
+            state.data.current?.let {
+                CurrentWeatherView(it)
+            }
+
+            state.data.forecast?.let {
+                ForecastView(it)
+            }
+        }
+        is UiResult.Failure -> {
+            val message = stringResource(R.string.generic_error_message)
+            Toast.makeText(
+                context,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        else -> { /* do nothing */ }
     }
 }
 

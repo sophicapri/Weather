@@ -8,11 +8,13 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
 
-
 @Module
 @InstallIn(SingletonComponent::class)
 object PresentationModule {
 
     @Provides
     fun provideMainDispatcher() : CoroutineDispatcher = Dispatchers.Main
+
+  //  @Provides
+   // fun provideIODispatcher() : CoroutineDispatcher = Dispatchers.IO
 }

@@ -16,6 +16,7 @@ class HomeViewModel @Inject constructor(
     private val getCurrentWeatherUseCase: GetCurrentWeatherUseCase,
     private val getForecastUseCase: GetForecastUseCase,
     mainDispatcher: CoroutineDispatcher,
+    //ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + mainDispatcher)
@@ -60,13 +61,17 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun displayCurrentWeather() {
-        scope.launch {
+        // scope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             val res = getCurrentWeatherUseCase(location)
-            if (res.isSuccess)
-                _state.value = UiResult.Success(UiState(current = res.getOrNull()))
-            else
-                _state.value = UiResult.Failure()
+            withContext(Dispatchers.Main) {
+                if (res.isSuccess)
+                    _state.value = UiResult.Success(UiState(current = res.getOrNull()))
+                else
+                    _state.value = UiResult.Failure()
+            }
         }
+        //}
     }
 
     private fun displayForecast() {
