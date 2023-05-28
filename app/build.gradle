@@ -102,8 +102,3 @@ dependencies {
     def mockkVersion = '1.13.5'
     testImplementation("io.mockk:mockk:$mockkVersion")
 }
-
-// Allow references to generated code
-kapt {
-    correctErrorTypes true
-}

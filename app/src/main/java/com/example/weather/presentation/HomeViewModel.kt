@@ -1,22 +1,25 @@
 package com.example.weather.presentation
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.weather.domain.GetCurrentWeatherUseCase
 import com.example.weather.domain.GetForecastUseCase
 import com.example.weather.domain.model.CurrentWeather
 import com.example.weather.domain.model.ForecastWeather
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getCurrentWeatherUseCase: GetCurrentWeatherUseCase,
     private val getForecastUseCase: GetForecastUseCase,
+    mainDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + mainDispatcher)
+
     private var location = ""
     private var weatherType = WeatherTypeEnum.CURRENT
 
@@ -57,7 +60,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun displayCurrentWeather() {
-        viewModelScope.launch {
+        scope.launch {
             val res = getCurrentWeatherUseCase(location)
             if (res.isSuccess)
                 _state.value = UiResult.Success(UiState(current = res.getOrNull()))
@@ -67,13 +70,18 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun displayForecast() {
-        viewModelScope.launch {
+        scope.launch {
             val res = getForecastUseCase(location)
             if (res.isSuccess)
                 _state.value = UiResult.Success(UiState(forecast = res.getOrNull()))
             else
                 _state.value = UiResult.Failure()
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        scope.cancel()
     }
 
     data class UiState(
