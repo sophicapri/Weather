@@ -75,8 +75,9 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
 
     // Coil
-    def coilVersion = "2.1.0"
+    def coilVersion = "2.4.0"
     implementation("io.coil-kt:coil-compose:$coilVersion")
+    implementation("io.coil-kt:coil-gif:$coilVersion")
 
     // Coroutines + Flow
     def coroutinesVersion = '1.7.1'

@@ -11,12 +11,10 @@ fun List<ForecastWeatherDto>.toDomain() = map {
         high = it.high,
         skyCodeDay = it.skyCodeDay,
         skyTextDay = it.skyTextDay,
-        date = it.date,
         day = it.day,
         shortDay = it.shortDay,
-        precip = it.precip,
         degType = it.degType,
-        image = "http://blob.weather.microsoft.com/static/weather4/en-us/law/${it.skyCodeDay}.gif",
+        image = "https://blob.weather.microsoft.com/static/weather4/en-us/law/${it.skyCodeDay}.gif",
     )
 }
 
@@ -35,6 +33,6 @@ fun CurrentWeatherDto.toDomain() = let {
         shortDay = it.shortDay,
         windSpeed = it.windSpeed,
         degType = it.degType,
-        image = "http://blob.weather.microsoft.com/static/weather4/en-us/law/${it.skyCode}.gif",
+        image = "https://blob.weather.microsoft.com/static/weather4/en-us/law/${it.skyCode}.gif",
     )
 }
