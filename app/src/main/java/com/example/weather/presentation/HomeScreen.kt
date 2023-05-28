@@ -4,6 +4,8 @@ import android.os.Build.VERSION.SDK_INT
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -11,11 +13,15 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.GifDecoder
@@ -30,12 +36,8 @@ fun HomeScreen(
     events: HomeViewModel.UiEvents,
     radioButtonsValues: Array<WeatherTypeEnum>,
 ) {
-    Column(
-        modifier = Modifier.padding(
-            start = 24.dp,
-            end = 24.dp
-        )
-    ) {
+    Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp)) {
+
         SearchLocationView(radioButtonsValues, events)
 
         if (state is UiResult.Success) {
@@ -58,114 +60,185 @@ fun SearchLocationView(
     events: HomeViewModel.UiEvents
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        var value by remember { mutableStateOf("") }
+        val focusManager = LocalFocusManager.current
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(
-                top = 16.dp,
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                tint = TextFieldDefaults
-                    .textFieldColors()
-                    .leadingIconColor(enabled = true, isError = false).value,
-                contentDescription = "Clear",
-                modifier = Modifier.padding(start = 16.dp)
-            )
+        SearchTextField(events, focusManager)
 
-            TextField(
-                value = value,
-                onValueChange = { newValue: String ->
-                    value = newValue
-                    events.onInputChange(newValue)
-                },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = "Clear",
-                        modifier = Modifier.clickable {
-                            value = ""
-                            events.onClearInput()
-                        }
-                    )
-                },
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent),
-                textStyle = MaterialTheme.typography.body1.copy(color = Color.Black),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        WeatherTypeRadioButtons(radioButtonsValues, events.onRadioButtonSelected)
 
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 8.dp)
-        ) {
-            var selectedOption by remember {
-                mutableStateOf(
-                    radioButtonsValues[0]
-                )
-            }
-
-            radioButtonsValues.forEach {
-                Row(
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    RadioButton(
-                        selected = selectedOption == it,
-                        onClick = {
-                            selectedOption = it
-                            events.onRadioButtonSelected(it)
-                        }
-                    )
-
-                    Text(
-                        text = when (it) {
-                            WeatherTypeEnum.CURRENT -> it.name.lowercase() // todo: change to res
-                            WeatherTypeEnum.FORECAST -> it.name.lowercase() // todo: change to res
-                        },
-                        color = Color.Black
-                    )
-                }
-            }
-        }
-
-        TextButton(
-            onClick = events.onSearchClick,
-            colors = ButtonDefaults.textButtonColors(
-                backgroundColor = Color.LightGray,
-                contentColor = Color.Black
-            ),
-        ) {
-            Text(
-                "SEARCH", Modifier.padding(start = 6.dp, end = 6.dp),
-                color = Color.Black
-            )
-        }
+        SearchButton(events.onSearchClick, focusManager)
 
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
 @Composable
+fun SearchButton(onSearchClick: () -> Unit, focusManager: FocusManager) {
+    TextButton(
+        onClick = {
+            onSearchClick()
+            focusManager.clearFocus()
+        },
+        colors = ButtonDefaults.textButtonColors(
+            backgroundColor = Color.LightGray.copy(alpha = 0.6f),
+            contentColor = Color.Black
+        ),
+    ) {
+        Text(
+            "SEARCH", Modifier.padding(start = 6.dp, end = 6.dp),
+            color = Color.Black
+        )
+    }
+}
+
+@Composable
+fun WeatherTypeRadioButtons(
+    radioButtonsValues: Array<WeatherTypeEnum>,
+    onRadioButtonSelected: (WeatherTypeEnum) -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(top = 8.dp)
+    ) {
+        var selectedOption by remember { mutableStateOf(radioButtonsValues[0]) }
+
+        radioButtonsValues.forEach {
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                RadioButton(
+                    selected = selectedOption == it,
+                    onClick = {
+                        selectedOption = it
+                        onRadioButtonSelected(it)
+                    }
+                )
+
+                Text(
+                    text = when (it) {
+                        WeatherTypeEnum.CURRENT -> it.name.lowercase() // todo: change to res
+                        WeatherTypeEnum.FORECAST -> it.name.lowercase() // todo: change to res
+                    },
+                    color = Color.Black
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchTextField(events: HomeViewModel.UiEvents, focusManager: FocusManager) {
+    var value by remember { mutableStateOf("") }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(
+            top = 16.dp,
+        )
+    ) {
+        Icon(
+            imageVector = Icons.Default.Search,
+            tint = TextFieldDefaults
+                .textFieldColors()
+                .leadingIconColor(enabled = true, isError = false).value,
+            contentDescription = "Search",
+            modifier = Modifier.padding(start = 16.dp)
+        )
+
+        TextField(
+            value = value,
+            onValueChange = { newValue: String ->
+                value = newValue
+                events.onInputChange(newValue)
+            },
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Clear",
+                    modifier = Modifier.clickable {
+                        value = ""
+                        events.onClearInput()
+                    }
+                )
+            },
+            placeholder = { Text("City") },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(onSearch = {
+                focusManager.clearFocus()
+                events.onSearchClick()
+            }),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.Transparent
+            ),
+            textStyle = MaterialTheme.typography.body1.copy(color = Color.Black),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
 fun CurrentWeatherView(currentWeather: CurrentWeather) {
-    Column(horizontalAlignment = Alignment.Start) {
-        Text(text = currentWeather.observationPoint)
+    Column(
+        horizontalAlignment = Alignment.Start,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = currentWeather.observationPoint,
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
         Row {
-            Text(text = currentWeather.day, modifier = Modifier.padding(end = 8.dp))
+            Text(text = currentWeather.day, modifier = Modifier.padding(end = 4.dp, bottom = 4.dp))
             Text(text = currentWeather.observationTime)
         }
         Text(text = currentWeather.skyText)
 
-        Row {
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
             RemoteGif(
                 url = currentWeather.image,
-                size = 40.dp,
+                size = 58.dp,
                 contentDesc = "Weather icon"
             )
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(top = 4.dp)
+            ) {
+                Text(
+                    text = currentWeather.temperature,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 40.sp,
+                    color = Color.Black,
+                )
+                Text(
+                    text = "°${currentWeather.degType}",
+                    fontSize = 20.sp,
+                    color = Color.Black,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+
+
+            Spacer(modifier = Modifier.padding(end = 24.dp))
+
+            Column {
+                Text(
+                    text = "feels like: ${currentWeather.feelsLike}°${currentWeather.degType}",
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Text(
+                    text = "humidity: ${currentWeather.humidity}%",
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Text(
+                    text = "wind: ${currentWeather.windDisplay}",
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+            }
         }
     }
 }

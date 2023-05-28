@@ -49,6 +49,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun onClearInput() {
+        location = ""
         _state.value = UiResult.None()
     }
 
