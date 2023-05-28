@@ -41,11 +41,13 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun onSearchClick() {
-        if (location.isNotEmpty())
+        if (location.isNotEmpty()) {
+            location = location.trim()
             when (weatherType) {
                 WeatherTypeEnum.CURRENT -> displayCurrentCurrentWeather()
                 WeatherTypeEnum.FORECAST -> displayForecast()
             }
+        }
     }
 
     private fun onClearInput() {

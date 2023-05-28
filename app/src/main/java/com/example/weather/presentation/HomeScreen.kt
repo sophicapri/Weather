@@ -261,24 +261,27 @@ private fun ForecastItem(forecastWeather: ForecastWeather) {
     ) {
         Text(
             text = forecastWeather.shortDay,
-            color = MaterialTheme.colors.onBackground
+            color = MaterialTheme.colors.onBackground,
+            fontSize = 14.sp,
         )
 
         RemoteGif(
             url = forecastWeather.image,
-            size = 50.dp,
+            size = 40.dp,
             contentDesc = forecastWeather.skyTextDay
         )
 
         Row {
             Text(
                 text = "${forecastWeather.low}°${forecastWeather.degType}",
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(end = 4.dp),
                 color = Color.Black
             )
             Text(
                 text = "${forecastWeather.high}°${forecastWeather.degType}",
+                fontSize = 14.sp
             )
         }
     }
