@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color
 
 private val ColorPalette = lightColors(
     primary = Purple500,
-    primaryVariant = Purple700,
+    primaryVariant = Blue700,
     secondary = Pink400,
     background = Color.White,
     surface = Color.White,

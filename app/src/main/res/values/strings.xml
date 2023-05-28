@@ -5,8 +5,8 @@
     <string name="forecast">forecast</string>
     <string name="clear">Clear</string>
     <string name="city">City</string>
-    <string name="feels_like">"feels like: %1$s %2$s"</string>
-    <string name="humidity">"humidity: %s"</string>
+    <string name="feels_like">"feels like: %1$s°%2$s"</string>
+    <string name="humidity">"humidity: %s%%"</string>
     <string name="wind">"wind: %s"</string>
     <string name="generic_error_message">Sorry, we couldn\'t find any result for this request.</string>
 </resources>
