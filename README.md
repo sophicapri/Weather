@@ -24,7 +24,7 @@ Here are some code improvements that could be made:
 Architecture
 --------------
 
-I chose to have a single 'app' module to keep things simple, but I've split the packages in a way I would if it was a multi-module project by feature.
+I applied Clean Architecture (in the Uncle Bob sense) and chose to have a single 'app' module to keep things simple, but I've split the packages in a way I would if it was a multi-module project by feature.
 I have these packages for this single feature app:
 - data 
 - domain
@@ -38,9 +38,9 @@ Technical Stack
   * [Kotlin Flow][13] - Works in hand with coroutines to handle asynchronous data.
   * [Compose][11] - Library to create the UI components.
   * [Retrofit][5] - For network calls.
-  * [Hilt][92] - For dependency injection
-  * [Coil][32] - To load remote images
-  * [Moshi][9] - Json converter
+  * [Hilt][92] - For dependency injection.
+  * [Coil][32] - To load remote images.
+  * [Moshi][9] - Json library.
   * [MockK][20] - Mocking library for tests.
 
 
