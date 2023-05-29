@@ -19,7 +19,7 @@ Here are some code improvements that could be made:
 - Add placeholders for the images.
 - Cover more tests.
 - Handle network errors in a more specific way. (ex: log the network errors)  
-- Extract common Dp values into a seperate file, and overall handle the app theme
+- Extract common Dp values into a separate file for reusability
 
 Architecture
 --------------
