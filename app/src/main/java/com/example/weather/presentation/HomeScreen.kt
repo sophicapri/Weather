@@ -330,6 +330,8 @@ private fun RemoteGif(url: String, size: Dp, contentDesc: String) {
     AsyncImage(
         model = ImageRequest.Builder(context)
             .data(url)
+            .crossfade(true)
+            .crossfade(200)
             .build(),
         imageLoader = imageLoader,
         modifier = Modifier.size(size),
