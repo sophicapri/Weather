@@ -94,7 +94,6 @@ class HomeViewModel @Inject constructor(
     data class UiState(
         val current: CurrentWeather? = null,
         val forecast: List<ForecastWeather>? = null,
-        val error: String? = null,
     )
 
     data class UiEvents(
